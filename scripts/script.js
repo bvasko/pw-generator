@@ -1,9 +1,8 @@
-// Assignment Code
-var generateBtn = document.querySelector("#generate");
 // initialize password length var
 let passwordLength = 0;
+// strings are an array of letters
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
+let passwordCharSet = '';
 // all character sets for criteria
 let characterSets = {
   lowercase: {
@@ -24,58 +23,60 @@ let characterSets = {
   specialCharacters: {
     displayName: "special characters",
     useCharSet: false,
-    characters: "!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
+    characters: "!#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
   },
 };
+function getPasswordLength() {
+  const promptMessage = "Enter password length. Must be a number between 8 and 128";
+  passwordLength = Number(window.prompt(promptMessage));
+}
 
 function getCriteria() {
   //get array of object keys for criteria
   const criteria = Object.keys(characterSets);
-  console.log(criteria)
   criteria.forEach((key) => {
     const message = `Do you want to include ${characterSets[key]['displayName']}?`;
     //Prompt user for which character sets to include 
     const includeChars = window.confirm(message);
-    //toggle that value in the character set object
+    //Store the selected options so we can display it or potentially save the criteria for later
     characterSets[key]["useCharSet"] = includeChars;
+    passwordCharSet += characterSets[key].characters;
   });
-  const promptMessage = "Enter password length. Must be a number between 8 and 128";
-  passwordLength = Number(window.prompt(promptMessage));
+  getPasswordLength();
   if (passwordLength < 8 || passwordLength > 128 || null) {
-    passwordLength = Number(window.prompt(promptMessage));
+    getPasswordLength();
   }
 }
 
-function getAllPasswordCharacters() {
-  const criteria = Object.keys(characterSets);
-  let passwordCharSet = '';
-  // Get all the characters that should be used
-  criteria.forEach((key) => {
-    const charSet = characterSets[key];
-    if (charSet.includeChars) {
-      passwordCharSet += charSet.characters;
-    }
-  });
-  return passwordCharSet;
-}
-
-function getCharacter(characters) {
-  
+// Get a character from the string of all possible ones
+function getCharacter(characters, max) {
+  const getRandomIntInclusive = (min, max) => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
+  };
+  return characters[getRandomIntInclusive(0, max)];
 }
 
 function generatePassword() {
-  const characters = getAllPasswordCharacters();
+  // make a copy of the string of all possible characters
+  let characters = passwordCharSet;
   let password = '';
   for (let i = 0; i < passwordLength; i++) {
     // call function to get character
-    getCharacter(characters);
+    const newChar = getCharacter(characters, characters.length);
+    if (password.length !== 0) {
+      //remove selected character from list of all characters so there are no repeats
+      characters.replace(newChar, '');
+    }
     // append character to password
-    // make copy of permissable character string and remove character that was used
-
+    password += newChar;
   }
-
+  return password;
 }
 
+// Get Generate Password button
+var generateBtn = document.querySelector("#generate");
 // Write password to the #password input
 function writePassword() {
   getCriteria();
