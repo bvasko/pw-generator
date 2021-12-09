@@ -42,7 +42,6 @@ function getCriteria() {
     if (includeChars) {
       characterSets[key]["useCharSet"] = includeChars;
       passwordCharSet += characterSets[key]["characters"];
-      console.log('pw chars', passwordCharSet);
     }
   });
   getPasswordLength();
@@ -63,15 +62,10 @@ function getCharacter(characters, max) {
 }
 
 function generatePassword() {
-  // make a copy of the string of all possible characters
-  console.log('password characters ', passwordCharSet)
   let password = '';
   for (let i = 0; i < passwordLength; i++) {
     // call function to get character
     const newChar = getCharacter(passwordCharSet, passwordCharSet.length - 1);
-    if (password.length !== 0) {
-      console.log('char, pw', passwordCharSet, password, passwordCharSet.length)
-    }
     // append character to password
     password += newChar;
   }
