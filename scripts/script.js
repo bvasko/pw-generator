@@ -39,8 +39,11 @@ function getCriteria() {
     //Prompt user for which character sets to include 
     const includeChars = window.confirm(message);
     //Store the selected options so we can display it or potentially save the criteria for later
-    characterSets[key]["useCharSet"] = includeChars;
-    passwordCharSet += characterSets[key].characters;
+    if (includeChars) {
+      characterSets[key]["useCharSet"] = includeChars;
+      passwordCharSet += characterSets[key]["characters"];
+      console.log('pw chars', passwordCharSet);
+    }
   });
   getPasswordLength();
   if (passwordLength < 8 || passwordLength > 128 || null) {
@@ -50,6 +53,7 @@ function getCriteria() {
 
 // Get a character from the string of all possible ones
 function getCharacter(characters, max) {
+  console.log('getCharacter ', characters, max)
   const getRandomIntInclusive = (min, max) => {
     min = Math.ceil(min);
     max = Math.floor(max);
@@ -60,14 +64,13 @@ function getCharacter(characters, max) {
 
 function generatePassword() {
   // make a copy of the string of all possible characters
-  let characters = passwordCharSet;
+  console.log('password characters ', passwordCharSet)
   let password = '';
   for (let i = 0; i < passwordLength; i++) {
     // call function to get character
-    const newChar = getCharacter(characters, characters.length);
+    const newChar = getCharacter(passwordCharSet, passwordCharSet.length - 1);
     if (password.length !== 0) {
-      //remove selected character from list of all characters so there are no repeats
-      characters.replace(newChar, '');
+      console.log('char, pw', passwordCharSet, password, passwordCharSet.length)
     }
     // append character to password
     password += newChar;
@@ -77,9 +80,13 @@ function generatePassword() {
 
 // Get Generate Password button
 var generateBtn = document.querySelector("#generate");
+
 // Write password to the #password input
 function writePassword() {
+  passwordCharSet = '';
+  document.getElementById('password').value = "";
   getCriteria();
+  // reset password character set
   var password = generatePassword();
   var passwordText = document.querySelector("#password");
 
